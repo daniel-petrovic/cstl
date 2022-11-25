@@ -103,6 +103,70 @@ MunitResult test_vector_push_increases_count_and_capacity(const MunitParameter p
     return MUNIT_OK;
 }
 
+MunitResult test_vector_push(const MunitParameter params[], void* fixture)
+{
+    struct cstl_vector* vec = cstl_vector_new(sizeof(int));
+    int x = 8;
+    cstl_vector_push(vec, &x);
+    int y = *(int*)(cstl_vector_back(vec));
+    munit_assert_int(x, ==, y);
+    return MUNIT_OK;
+}
+
+MunitResult test_vector_empty(const MunitParameter params[], void* fixture)
+{
+    struct cstl_vector* vec = cstl_vector_new(sizeof(int));
+    munit_assert_true(cstl_vector_empty(vec));
+    return MUNIT_OK;
+}
+
+MunitResult test_vector_empty_false_after_push(const MunitParameter params[], void* fixture)
+{
+    struct cstl_vector* vec = cstl_vector_new(sizeof(int));
+    int x;
+    cstl_vector_push(vec, &x);
+    munit_assert_false(cstl_vector_empty(vec));
+    return MUNIT_OK;
+}
+
+MunitResult test_vector_pop(const MunitParameter params[], void* fixture)
+{
+    struct cstl_vector* vec = cstl_vector_new(sizeof(int));
+    int x = 0;
+    cstl_vector_push(vec, &x);
+    munit_assert_uint64(1, ==, cstl_vector_elem_count(vec));
+    cstl_vector_pop(vec);
+    munit_assert_uint64(0, ==, cstl_vector_elem_count(vec));
+    munit_assert_true(cstl_vector_empty(vec));
+    return MUNIT_OK;
+}
+
+MunitResult test_vector_back(const MunitParameter params[], void* fixture)
+{
+    struct cstl_vector* vec = cstl_vector_new(sizeof(int));
+    const int x = 123;
+    cstl_vector_push(vec, &x);
+    munit_assert_uint64(1, ==, cstl_vector_elem_count(vec));
+    munit_assert_int(x, ==, *(int*)(cstl_vector_back(vec)));
+    return MUNIT_OK;
+}
+
+MunitResult test_vector_front(const MunitParameter params[], void* fixture)
+{
+    struct cstl_vector* vec = cstl_vector_new(sizeof(int));
+    const int x = 123;
+    cstl_vector_push(vec, &x);
+    munit_assert_uint64(1, ==, cstl_vector_elem_count(vec));
+    munit_assert_int(x, ==, *(int*)(cstl_vector_front(vec)));
+
+    const int y = 456;
+    cstl_vector_push(vec, &y);
+    munit_assert_uint64(2, ==, cstl_vector_elem_count(vec));
+    munit_assert_int(x, ==, *(int*)(cstl_vector_front(vec)));
+    return MUNIT_OK;
+}
+
+
 // All Tests
 static MunitTest test_suite_tests[] = {
     {
@@ -152,6 +216,54 @@ static MunitTest test_suite_tests[] = {
         teardown_num_elems_to_push,  // teardown
         MUNIT_SUITE_OPTION_NONE,
         parameters_num_elems_to_push
+    },
+    {
+        (char*)"/push",
+        test_vector_push,
+        NULL,   // setup
+        NULL,  // teardown
+        MUNIT_SUITE_OPTION_NONE,
+        NULL
+    },
+    {
+        (char*)"/pop",
+        test_vector_pop,
+        NULL,   // setup
+        NULL,  // teardown
+        MUNIT_SUITE_OPTION_NONE,
+        NULL
+    },
+    {
+        (char*)"/back",
+        test_vector_back,
+        NULL,   // setup
+        NULL,  // teardown
+        MUNIT_SUITE_OPTION_NONE,
+        NULL
+    },
+    {
+        (char*)"/front",
+        test_vector_front,
+        NULL,   // setup
+        NULL,  // teardown
+        MUNIT_SUITE_OPTION_NONE,
+        NULL
+    },
+    {
+        (char*)"/empty",
+        test_vector_empty,
+        NULL,   // setup
+        NULL,  // teardown
+        MUNIT_SUITE_OPTION_NONE,
+        NULL
+    },
+    {
+        (char*)"/empty_false_after_push",
+        test_vector_empty_false_after_push,
+        NULL,   // setup
+        NULL,  // teardown
+        MUNIT_SUITE_OPTION_NONE,
+        NULL
     },
     { NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL }
 };

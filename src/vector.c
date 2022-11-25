@@ -1,5 +1,6 @@
 #include "cstl/vector.h"
 
+#include <assert.h>
 #include <string.h>
 
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
@@ -23,6 +24,7 @@ struct cstl_vector* cstl_vector_new(size_t elem_size) {
 
 void cstl_vector_clear(struct cstl_vector* vec) {
     free(vec->data);
+    memset(vec, 0, sizeof(vec));
 }
 
 void cstl_vector_delete(struct cstl_vector* vec) {
@@ -44,6 +46,11 @@ size_t cstl_vector_elem_capacity(const struct cstl_vector* vec)
     return vec->ecapacity;
 }
 
+int cstl_vector_empty(const struct cstl_vector* vec)
+{
+  return  vec->ecount == 0;
+}
+
 void cstl_vector_reserve(struct cstl_vector* vec, size_t count)
 {
     if (count > vec->ecapacity) {
@@ -52,12 +59,33 @@ void cstl_vector_reserve(struct cstl_vector* vec, size_t count)
     }
 }
 
-void cstl_vector_push(struct cstl_vector* vec, void* elem)
+void cstl_vector_push(struct cstl_vector* vec, const void* elem)
 {
     if (vec->ecount >= vec->ecapacity) {
         cstl_vector_reserve(vec, MAX(1, 2*vec->ecapacity));
     }
 
-    memcpy(vec->data, elem, vec->esize);
+    void* back = vec->data + vec->esize*vec->ecount;
+    memcpy(back, elem, vec->esize);
     ++vec->ecount;
+}
+
+void* cstl_vector_pop(struct cstl_vector* vec)
+{
+  assert(vec->ecount > 0);
+  void* back = cstl_vector_back(vec);
+  --vec->ecount;
+  return back;
+}
+
+void* cstl_vector_back(struct cstl_vector* vec)
+{
+  assert(vec->ecount > 0);
+  return vec->data + (vec->ecount-1)*vec->esize;
+}
+
+void *cstl_vector_front(struct cstl_vector *vec)
+{
+  assert(vec->ecount > 0);
+  return vec->data;
 }
