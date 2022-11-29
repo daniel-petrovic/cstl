@@ -166,6 +166,17 @@ MunitResult test_vector_front(const MunitParameter params[], void* fixture)
     return MUNIT_OK;
 }
 
+MunitResult test_vector_at(const MunitParameter params[], void* fixture)
+{
+    struct cstl_vector* vec = cstl_vector_new(sizeof(int));
+    munit_assert_ptr_null(cstl_vector_at_or_null(vec, 0));
+    const int x = 1;
+    cstl_vector_push(vec, &x);
+    munit_assert_ptr_not_null(cstl_vector_at_or_null(vec, 0));
+    munit_assert_int(x, ==, *(int*)cstl_vector_at_or_null(vec, 0));
+    return MUNIT_OK;
+}
+
 
 // All Tests
 static MunitTest test_suite_tests[] = {
@@ -260,6 +271,14 @@ static MunitTest test_suite_tests[] = {
     {
         (char*)"/empty_false_after_push",
         test_vector_empty_false_after_push,
+        NULL,   // setup
+        NULL,  // teardown
+        MUNIT_SUITE_OPTION_NONE,
+        NULL
+    },
+    {
+        (char*)"/at",
+        test_vector_at,
         NULL,   // setup
         NULL,  // teardown
         MUNIT_SUITE_OPTION_NONE,

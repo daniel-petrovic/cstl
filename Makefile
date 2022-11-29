@@ -2,8 +2,13 @@ OBJECTS= ./build/vector.o
 INCLUDES= -I./include
 MUNIT_OBJECTS= ./build/munit.o
 
-all: ${OBJECTS}
-	gcc -g ${INCLUDES} main.c ${OBJECTS} -o main
+.PHONY: make_dirs
+
+all: make_dirs $(OBJECTS)
+	ar rcs ./build/cstl.o ${OBJECTS}
+
+make_dirs:
+	mkdir -p ./build/helpers
 
 ./build/vector.o: ./src/vector.c
 	gcc -g ${INCLUDES} ./src/vector.c -o ./build/vector.o -c
@@ -23,5 +28,5 @@ test: build_tests
 
 .PHONY: clean
 clean:
-	rm -f main
+	rm -f ./build/cstl.o
 	rm -f ${OBJECTS}
